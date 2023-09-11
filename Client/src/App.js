@@ -3,6 +3,7 @@ import { useRoutes } from "react-router-dom";
 import MenuChooseGame from './MenuChooseGame';
 import MenuJoinGame from './MenuJoinGame';
 import LobbyServer from './LobbyServer';
+import LobbyClient from './LobbyClient';
 import { Stack } from '@mui/material';
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
     },
     {
       path: "/lobbyClient/:game/:code",
-      element: <LobbyServer />,
+      element: <LobbyClient />,
     },
     {
       path: "/joinGame/:game",
