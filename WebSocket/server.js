@@ -9,13 +9,14 @@ const io = require("socket.io")(process.env.ENV == "production" ? process.env.WE
 })
 
 const userConnected = [
+
 ];
 
 const room = [
 
 ];
 
-const addUser = (socketId) => {
+const addUser = (socketId, server) => {
     const tokenWs = jwt.sign(
         {
         },
@@ -24,7 +25,7 @@ const addUser = (socketId) => {
             expiresIn: 360000
         }
     )
-    userConnected.push({socketId: socketId, tokenWs: tokenWs});
+    userConnected.push({socketId: socketId, tokenWs: tokenWs, server: server});
     return (tokenWs);
 }
 
@@ -47,8 +48,9 @@ const verifWs = (socketId, token) => {
 io.on("connection", (socket) => {
     console.log("a user connected");
 
-    socket.on("Connect", () => {
-        const tokenWs = addUser(socket.id);
+    socket.on("Connect", (server) => {
+        const tokenWs = addUser(socket.id, server);
+        console.log(server)
         socket.emit("Connected", {token: tokenWs});
     })
 

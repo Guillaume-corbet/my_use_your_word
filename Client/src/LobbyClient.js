@@ -7,11 +7,11 @@ function lobbyClient() {
     let {game, code} = useParams();
 
     return (
-          <Link to="../">
-            <Button variant="contained" color="success">
-                {game}, {code}
-            </Button>
-          </Link>
+      <Link to="../">
+        <Button variant="contained" color="success">
+          {game}, {code}
+        </Button>
+      </Link>
     )
 }
 
