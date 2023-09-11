@@ -17,16 +17,8 @@ const room = [
 ];
 
 const addUser = (socketId, server) => {
-    const tokenWs = jwt.sign(
-        {
-        },
-        process.env.RANDOM_STRING_WS,
-        {
-            expiresIn: 360000
-        }
-    )
-    userConnected.push({socketId: socketId, tokenWs: tokenWs, server: server});
-    return (tokenWs);
+    userConnected.push({socketId: socketId, server: server});
+    return;
 }
 
 const removeUser = (socketId) => {
@@ -35,23 +27,42 @@ const removeUser = (socketId) => {
     });
 }
 
-const verifWs = (socketId, token) => {
-    try {
-        jwt.verify(token, process.env.RANDOM_STRING_WS);
-        return (true);
-    } catch (err) {
-        removeUser(socketId);
-        return (false);
+const addRoom = (socketId, code) => {
+    room.push({code: code, user: [{id: socketId, server: true}]})
+    return;
+}
+
+const generateCodeRoom = () => {
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let find = true
+    let result = ""
+    while (!true) {
+        find = false
+        result = ""
+        for ( var i = 0; i < 5; i++ ) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length)); 
+        }
+        for (var i = 0; i < room.length; i++) {
+            if (room.at(i).code == result)
+                find = true
+        }
     }
+    return (result)
 }
 
 io.on("connection", (socket) => {
     console.log("a user connected");
 
     socket.on("Connect", (server) => {
-        const tokenWs = addUser(socket.id, server);
+        addUser(socket.id, server);
         console.log(server)
         socket.emit("Connected", {token: tokenWs});
+    })
+
+    socket.on("createRoom", () => {
+        let code = generateCodeRoom();
+        addRoom(socket.id, code);
+        socket.emit("RoomCreated", {code: code})
     })
 
     socket.on("disconnect", () => {
