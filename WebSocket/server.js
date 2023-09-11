@@ -7,23 +7,22 @@ const io = require("socket.io")(4000, {
     },
 })
 
-let userConnected = [
-
-];
-
 let room = [
 
 ];
 
-const addUser = (socketId) => {
-    userConnected.push({socketId: socketId});
-    return;
-}
-
-const removeUser = (socketId) => {
-    userConnected = userConnected.filter(function(ele) {
-        return ele.socketId != socketId;
-    });
+const removeUser = (socketId, socket) => {
+    for (let x = 0; x < room.length; x++) {
+        for (let y = 0; y < room.at(x).user.length; y++) {
+            if (room.at(x).user.at(y).id == socketId) {
+                if (room.at(x).user.at(y).server) {
+                    socket.in(room.at(x).code).disconnectSockets();
+                } else {
+                    socket.disconnect();
+                }
+            }
+        }
+    }
 }
 
 const addRoom = (socketId, code) => {
@@ -63,7 +62,6 @@ io.on("connection", (socket) => {
     console.log("a user connected");
 
     socket.on("Connect", (server) => {
-        addUser(socket.id);
         socket.emit("Connected");
     })
 
@@ -86,7 +84,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-        removeUser(socket.id);
+        removeUser(socket.id, socket);
     })
 
 })
