@@ -26,14 +26,18 @@ const removeUser = (socketId, socket) => {
 }
 
 const addRoom = (socketId, code) => {
-    room.push({code: code, user: [{id: socketId, server: true}]})
+    room.push({code: code, user: [{id: socketId, server: true, playerName}]})
     return;
 }
 
-const joinRoom = (socketId, code) => {
+const joinRoom = (socketId, code, playerName) => {
     for (var i = 0; i < room.length; i++) {
         if (room.at(i).code == code) {
-            room.at(i).user.push({id: socketId, server: false})
+            for (var x = 0; x < room.at(i).user.length; x++) {
+                if (room.at(i).user.at(x).playerName == playerName)
+                    return ("Already Exist");
+            }
+            room.at(i).user.push({id: socketId, server: false, playerName: playerName})
             return room.at(i);
         }
     }
@@ -61,7 +65,7 @@ const generateCodeRoom = () => {
 io.on("connection", (socket) => {
     console.log("a user connected");
 
-    socket.on("Connect", (server) => {
+    socket.on("Connect", () => {
         socket.emit("Connected");
     })
 
@@ -72,11 +76,12 @@ io.on("connection", (socket) => {
         socket.emit("RoomCreated", {code: code})
     })
 
-    socket.on("joinRoom", (code) => {
-        res = joinRoom(socket.id, code);
-        console.log(res)
+    socket.on("joinRoom", (code, playerName) => {
+        res = joinRoom(socket.id, code, playerName);
         if (res == "No Room") {
             socket.emit("NoRoom")
+        } else if (res == "Already Exist") {
+            socket.emit("UserAlreadyExist")
         } else {
             socket.join(code)
             socket.emit("RoomJoined", {res: "Oui bien sur"})

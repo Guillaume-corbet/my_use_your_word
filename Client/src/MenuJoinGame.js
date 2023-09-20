@@ -7,6 +7,7 @@ function MenuJoinGame() {
 
     let {game} = useParams();
     const [code, setCode] = React.useState('');
+    const [playerName, setPlayerName] = React.useState('');
 
     function getPath(server) {
         if (server) {
@@ -31,7 +32,15 @@ function MenuJoinGame() {
                     setCode(event.target.value);
                 }}
             />
-            <Link to={getPath(false)}>
+            <TextField
+                id="PlayerName"
+                label="PlayerName"
+                value={playerName}
+                onChange={(event) => {
+                    setPlayerName(event.target.value);
+                }}
+            />
+            <Link to={getPath(false)} state={{playerName: playerName}}>
                 <Button variant="contained" color="success">
                     Join one
                 </Button>
