@@ -26,7 +26,7 @@ const removeUser = (socketId, socket) => {
 }
 
 const addRoom = (socketId, code) => {
-    room.push({code: code, user: [{id: socketId, server: true, playerName}]})
+    room.push({code: code, user: [{id: socketId, server: true, playerName: null}]})
     return;
 }
 
@@ -76,14 +76,15 @@ io.on("connection", (socket) => {
         socket.emit("RoomCreated", {code: code})
     })
 
-    socket.on("joinRoom", (code, playerName) => {
-        res = joinRoom(socket.id, code, playerName);
+    socket.on("joinRoom", (data) => {
+        res = joinRoom(socket.id, data.code, data.playerName);
         if (res == "No Room") {
             socket.emit("NoRoom")
         } else if (res == "Already Exist") {
             socket.emit("UserAlreadyExist")
         } else {
-            socket.join(code)
+            socket.to(data.code).emit("UserJoined", data.playerName)
+            socket.join(data.code)
             socket.emit("RoomJoined", {res: "Oui bien sur"})
         }
     })
@@ -95,5 +96,4 @@ io.on("connection", (socket) => {
 })
 
 instrument(io, {auth: false})
-console.log("Server listening port ");
-console.log(4000);
+console.log("Server listening port ", 4000);
