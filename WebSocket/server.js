@@ -16,8 +16,10 @@ const removeUser = (socketId, socket) => {
         for (let y = 0; y < room.at(x).user.length; y++) {
             if (room.at(x).user.at(y).id == socketId) {
                 if (room.at(x).user.at(y).server) {
+                    console.log("Room " + room.at(x).code + "disconnected")
                     socket.in(room.at(x).code).disconnectSockets();
                 } else {
+                    console.log("User " + room.at(x).user.at(y).playerName + "disconnected")
                     socket.disconnect();
                 }
             }
@@ -38,10 +40,10 @@ const joinRoom = (socketId, code, playerName) => {
                     return ("Already Exist");
             }
             room.at(i).user.push({id: socketId, server: false, playerName: playerName})
-            return room.at(i);
+            return "Room found";
         }
     }
-    return "No Room";
+    return ("No Room");
 }
 
 const generateCodeRoom = () => {
@@ -85,7 +87,7 @@ io.on("connection", (socket) => {
         } else {
             socket.to(data.code).emit("UserJoined", data.playerName)
             socket.join(data.code)
-            socket.emit("RoomJoined", {res: "Oui bien sur"})
+            socket.emit("RoomJoined")
         }
     })
 
