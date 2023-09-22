@@ -14,12 +14,7 @@ function LobbyServer() {
     }
 
     const UserJoined = (user) => {
-      console.log("enter")
-      console.log(user)
-      console.log(members)
       setMembers([...members, user])
-      console.log(user)
-      console.log(members)
     }
 
     React.useEffect(() => {
@@ -27,12 +22,17 @@ function LobbyServer() {
 
       socket.emit("createRoom");
       socket.on("RoomCreated", RoomCreated)
-      socket.on('UserJoined', UserJoined)
       return () => {
         socket.off('RoomCreated', RoomCreated)
-        socket.off('UserJoined', UserJoined)
       }
     }, [])
+
+    React.useEffect(() => {
+      socket.on('UserJoined', UserJoined)
+      return () => {
+        socket.off('UserJoined', UserJoined)
+      }
+    }, [members])
 
     return (
         <div>

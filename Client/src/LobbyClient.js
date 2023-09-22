@@ -10,9 +10,6 @@ function LobbyClient() {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-      const test = (res) => {
-        console.log(res)
-      }
   
       const NoRoom = () => {
         navigate('../joinGame/' + game, {state: {error: "Error room code"}})
@@ -27,7 +24,7 @@ function LobbyClient() {
       socket.on("NoRoom", NoRoom)
       socket.on("UserAlreadyExist", UserAlreadyExist)
       return () => {
-        socket.off('RoomJoined', test)
+        socket.off('RoomJoined')
         socket.off('NoRoom', NoRoom)
         socket.off("UserAlreadyExist", UserAlreadyExist)
       }
