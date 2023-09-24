@@ -7,19 +7,24 @@ const io = require("socket.io")(4000, {
     },
 })
 
-let room = [
+let room = {
+    "use": [
 
-];
+    ],
+    "quiz": [
 
-const removeUser = (socketId, socket) => {
-    for (let x = 0; x < room.length; x++) {
-        for (let y = 0; y < room.at(x).user.length; y++) {
-            if (room.at(x).user.at(y).id == socketId) {
-                if (room.at(x).user.at(y).server) {
-                    console.log("Room " + room.at(x).code + "disconnected")
-                    socket.in(room.at(x).code).disconnectSockets();
+    ]
+};
+
+const removeUser = (game, socketId, socket) => {
+    for (let x = 0; x < room[game].length; x++) {
+        for (let y = 0; y < room[game].at(x).user.length; y++) {
+            if (room[game].at(x).user.at(y).id == socketId) {
+                if (room[game].at(x).user.at(y).server) {
+                    console.log("Room " + room[game].at(x).code + " disconnected")
+                    socket.in(room[game].at(x).code).disconnectSockets();
                 } else {
-                    console.log("User " + room.at(x).user.at(y).playerName + "disconnected")
+                    console.log("User " + room[game].at(x).user.at(y).playerName + " disconnected")
                     socket.disconnect();
                 }
             }
@@ -27,26 +32,26 @@ const removeUser = (socketId, socket) => {
     }
 }
 
-const addRoom = (socketId, code) => {
-    room.push({code: code, user: [{id: socketId, server: true, playerName: null}]})
+const addRoom = (game, socketId, code) => {
+    room[game].push({code: code, user: [{id: socketId, server: true, playerName: null}]})
     return;
 }
 
-const joinRoom = (socketId, code, playerName) => {
-    for (var i = 0; i < room.length; i++) {
-        if (room.at(i).code == code) {
-            for (var x = 0; x < room.at(i).user.length; x++) {
-                if (room.at(i).user.at(x).playerName == playerName)
+const joinRoom = (game, socketId, code, playerName) => {
+    for (var i = 0; i < room[game].length; i++) {
+        if (room[game].at(i).code == code) {
+            for (var x = 0; x < room[game].at(i).user.length; x++) {
+                if (room[game].at(i).user.at(x).playerName == playerName)
                     return ("Already Exist");
             }
-            room.at(i).user.push({id: socketId, server: false, playerName: playerName})
+            room[game].at(i).user.push({id: socketId, server: false, playerName: playerName})
             return "Room found";
         }
     }
     return ("No Room");
 }
 
-const generateCodeRoom = () => {
+const generateCodeRoom = (game) => {
     let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     let find = true
     let result = ""
@@ -56,30 +61,32 @@ const generateCodeRoom = () => {
         for ( var i = 0; i < 5; i++ ) {
             result += chars.charAt(Math.floor(Math.random() * chars.length)); 
         }
-        for (var i = 0; i < room.length; i++) {
-            if (room.at(i).code == result)
+        for (var i = 0; i < room[game].length; i++) {
+            if (room[game].at(i).code == result)
                 find = true
         }
     }
     return (result)
 }
 
-io.on("connection", (socket) => {
-    console.log("a user connected");
+const useWS = io.of('/use_your_word')
+
+useWS.on("connection", (socket) => {
+    console.log("a user connected use your word");
 
     socket.on("Connect", () => {
         socket.emit("Connected");
     })
 
     socket.on("createRoom", () => {
-        let code = generateCodeRoom();
-        addRoom(socket.id, code);
+        let code = generateCodeRoom("use");
+        addRoom("use", socket.id, code);
         socket.join(code)
         socket.emit("RoomCreated", {code: code})
     })
 
     socket.on("joinRoom", (data) => {
-        res = joinRoom(socket.id, data.code, data.playerName);
+        res = joinRoom("use", socket.id, data.code, data.playerName);
         if (res == "No Room") {
             socket.emit("NoRoom")
         } else if (res == "Already Exist") {
@@ -92,7 +99,22 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-        removeUser(socket.id, socket);
+        removeUser("use", socket.id, socket);
+    })
+
+})
+
+const quizzWS = io.of('/quiz')
+
+quizzWS.on("connection", (socket) => {
+    console.log("a user connected on quiz");
+
+    socket.on("Connect", () => {
+        socket.emit("Connected");
+    })
+
+    socket.on("disconnect", () => {
+        removeUser("use", socket.id, socket);
     })
 
 })
