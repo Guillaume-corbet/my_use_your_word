@@ -14,15 +14,15 @@ function App() {
       element: <MenuChooseGame />,
     },
     {
-      path: "/lobbyServer/:game",
+      path: "use",
       element: <LobbyServer />,
     },
     {
-      path: "/lobbyClient/:game/:code",
+      path: "use/:code",
       element: <LobbyClient />,
     },
     {
-      path: "/joinGame/:game",
+      path: "use/join",
       element: <MenuJoinGame />,
     },
     {

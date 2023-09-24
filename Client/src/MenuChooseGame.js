@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 function MenuChooseGame() {
     return (
       <div>
-        <Link to="../joinGame/use">
+        <Link to="../use/join">
           <Button variant="contained" color="success">
               Use your word
           </Button>

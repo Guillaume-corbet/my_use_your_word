@@ -1,19 +1,18 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Stack, TextField } from '@mui/material';
 
 function MenuJoinGame() {
 
-    let {game} = useParams();
     const [code, setCode] = React.useState('');
     const [playerName, setPlayerName] = React.useState('');
 
     function getPath(server) {
         if (server) {
-            return ("../lobbyServer/" + game)
+            return ("../use/")
         } else {
-            return ("../lobbyClient/" + game + "/" + code)
+            return ("../use/" + code)
         }
     }
 

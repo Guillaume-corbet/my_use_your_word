@@ -5,7 +5,6 @@ import {socket, connectWs, gameSocket} from "./socket";
 
 function LobbyServer() {
 
-    let {game} = useParams();
     const [roomCode, setRoomCode] = React.useState('');
     const [members, setMembers] = React.useState([])
 
@@ -21,7 +20,6 @@ function LobbyServer() {
 
       if (socket == null || gameSocket != "use")
         connectWs("use")
-      console.log(game)
 
       socket.emit("createRoom");
       socket.on("RoomCreated", RoomCreated)

@@ -5,7 +5,7 @@ import {socket, connectWs, gameSocket} from "./socket";
 
 function LobbyClient() {
 
-    let {game, code} = useParams();
+    let {code} = useParams();
     let {state} = useLocation();
     const navigate = useNavigate();
 
@@ -19,11 +19,11 @@ function LobbyClient() {
       }
 
       const NoRoom = () => {
-        navigate('../joinGame/' + game, {state: {error: "Error room code"}})
+        navigate('../use/join/', {state: {error: "Error room code"}})
       }
   
       const UserAlreadyExist = () => {
-        navigate('../joinGame/' + game, {state: {error: "User already exist"}})
+        navigate('../use/join/', {state: {error: "User already exist"}})
       }
       
       socket.emit("joinRoom", {code: code, playerName: state.playerName});
@@ -40,7 +40,7 @@ function LobbyClient() {
     return (
       <Link to="../">
         <Button variant="contained" color="success">
-          {game}, {code}
+          {code}
         </Button>
       </Link>
     )
