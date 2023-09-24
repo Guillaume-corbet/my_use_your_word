@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import { Link, useParams } from 'react-router-dom';
-import {socket} from "./socket";
+import {socket, connectWs, gameSocket} from "./socket";
 
 function LobbyServer() {
 
@@ -18,6 +18,9 @@ function LobbyServer() {
     }
 
     React.useEffect(() => {
+
+      if (socket == null || gameSocket != "use")
+        connectWs("use")
       console.log(game)
 
       socket.emit("createRoom");

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import {socket} from "./socket";
+import {socket, connectWs, gameSocket} from "./socket";
 
 function LobbyClient() {
 
@@ -11,6 +11,13 @@ function LobbyClient() {
 
     React.useEffect(() => {
   
+      if (socket == null || gameSocket != "use")
+        connectWs("use")
+
+      const test = () => {
+        console.log("room joined")
+      }
+
       const NoRoom = () => {
         navigate('../joinGame/' + game, {state: {error: "Error room code"}})
       }
@@ -24,7 +31,7 @@ function LobbyClient() {
       socket.on("NoRoom", NoRoom)
       socket.on("UserAlreadyExist", UserAlreadyExist)
       return () => {
-        socket.off('RoomJoined')
+        socket.off('RoomJoined', test)
         socket.off('NoRoom', NoRoom)
         socket.off("UserAlreadyExist", UserAlreadyExist)
       }
